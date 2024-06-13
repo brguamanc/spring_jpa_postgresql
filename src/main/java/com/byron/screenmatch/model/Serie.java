@@ -1,17 +1,31 @@
 package com.byron.screenmatch.model;
 
 import com.byron.screenmatch.service.ConsultaChatGPT;
+import jakarta.persistence.*;
 
+
+import java.util.ArrayList;
+import java.util.List;
 import java.util.OptionalDouble;
-
+@Entity
+@Table(name="series")
 public class Serie {
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private Long id;
+    @Column(unique = true)
     private String titulo;
     private Integer totalTemporadas;
     private Double evaluacion;
     private String poster;
+    @Enumerated(EnumType.STRING)
     private Categoria genero;
     private String actores;
     private String sinopsis;
+    @OneToMany(mappedBy = "serie", cascade = CascadeType.ALL, fetch = FetchType.EAGER)
+    private List<Episodio> episodios = new ArrayList<>();
+
+    public Serie(){}
 
     public Serie(DatosSerie datosSerie){
         this.titulo = datosSerie.titulo();
@@ -26,12 +40,30 @@ public class Serie {
     @Override
     public String toString() {
         return  "genero=" + genero +
-                "titulo='" + titulo + '\'' +
+                ", titulo='" + titulo + '\'' +
                 ", totalTemporadas=" + totalTemporadas +
                 ", evaluacion=" + evaluacion +
                 ", poster='" + poster + '\'' +
                 ", actores='" + actores + '\'' +
-                ", sinopsis='" + sinopsis + '\'';
+                ", sinopsis='" + sinopsis  + '\'' +
+                ", episodios='" + episodios  + '\''  ;
+    }
+
+    public Long getId() {
+        return id;
+    }
+
+    public void setId(Long id) {
+        id = id;
+    }
+
+    public List<Episodio> getEpisodios() {
+        return episodios;
+    }
+
+    public void setEpisodios(List<Episodio> episodios) {
+        episodios.forEach(e -> e.setSerie(this));
+        this.episodios = episodios;
     }
 
     public String getTitulo() {
